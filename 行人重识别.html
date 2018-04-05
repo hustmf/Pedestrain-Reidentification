@@ -1,0 +1,125 @@
+<html>
+
+<h1>行人检索系统</h1>
+<head>
+<meta charset="UTF-8">
+<!--<title>图片上传预览</title>-->
+<script type="text/javascript">
+    var img;
+    function exec1(command) {
+        var ws = new ActiveXObject("WScript.Shell");
+        var s = document.getElementById("text");
+        var comm = command+s+"'";
+        ws.Run(comm, 1, false);
+        ws = null;
+    }
+    function imgProcess(fileDom){
+        //判断是否支持FileReader
+        if (window.FileReader) {
+            var reader = new FileReader();
+        } else {
+            alert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
+        }
+
+        //获取文件
+        var file = fileDom.files[0];
+        var imageType = /^image\//;
+        //是否是图片
+        if (!imageType.test(file.type)) {
+            alert("请选择图片！");
+            return;
+        }
+        //读取完成
+        img = document.getElementById("preview");
+        reader.onload = function(e) {
+            //获取图片dom
+            //var img = document.getElementById("preview");
+            //图片路径设置为读取的图片
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        //调用python程序
+        //var txt="<input type='button' value='开始处理' onclick='exec1('C:\\Anaconda3\\python.exe D:/www/reid.py -p "+img.src+"')'/>";
+        document.getElementById("pic").innerHTML=txt;
+        //调用后台python程序，运用ajax
+        /*var xmlhttp;
+        var x,i,outputImage;
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.onreadystatechange=function(){
+          var x,xmlDoc;
+          if(xmlhttp.readyState==4&&xmlhttp.status==200){
+            //服务器响应
+            xmlDoc=xmlhttp.responseXML;
+            x=xmlDoc.getElementsByTagName("Item");
+            i=0;
+            outputImage='';
+            for (i=0;i<x.length;i++){
+              outputImage += "<img src='"+x[i]+"'/>";
+            }
+            document.getElementById("pic").innerHTML=outputImage;
+          }
+        }
+        xmlhttp.open("POST","/www/reid.py"+img.src,true);
+        xmlhttp.send();*/
+    }
+</script>
+</head>
+
+<body>
+  <img id="preview" />
+  <br />
+  <input type="file" name="file" value="读取图片" onchange="imgProcess(this)" />
+  <div id="pic"></div>
+  <input type="text" name="path"/>
+  <input type="button" value="开始检索" onclick="exec1('C:\\Anaconda3\\python.exe reid.py -p )" />
+</body>
+
+<!--读取xml文件输出图片-->
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript">
+function loadXMLDoc()
+{
+var xmlhttp;
+var outputImage,x,xx,i;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    xmlDoc=xmlhttp.responseXML;
+    outputImage="";
+    x=xmlDoc.getElementsByTagName("Item");
+    xx=x[0].childNodes[0].nodeValue.split(" ");
+    for (i=0;i<15;i++)
+      {
+      outputImage += "<img src='reference/"+xx[i]+ ".jpg' width=100px height=200px>&emsp;";
+      if((i+1)%5==0){
+       outputImage+="<br/>";
+       outputImage+="<br/>";
+      }
+      }
+    document.getElementById("myDiv").innerHTML=outputImage;
+    }
+  }
+xmlhttp.open("GET","test.xml",true);
+xmlhttp.send();
+}
+</script>
+</head>
+
+<body>
+
+<h2>Result:</h2>
+<div id="myDiv"></div>
+<button type="button" onclick="loadXMLDoc()">获得图片</button>
+
+</body>
+</html>
